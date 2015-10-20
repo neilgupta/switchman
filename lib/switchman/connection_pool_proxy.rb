@@ -10,7 +10,7 @@ module Switchman
   end
 
   class ConnectionPoolProxy
-    delegate :spec, :connected?, :default_schema, :with_connection, :connections,
+    delegate :spec, :connected?, :default_schema, :with_connection,
              :to => :current_pool
 
     attr_reader :category, :schema_cache
@@ -39,6 +39,10 @@ module Switchman
       pool = @connection_pools[pool_key] ||= create_pool unless pool
       pool.shard = active_shard
       pool
+    end
+
+    def connections
+      @connection_pools.values.map(&:connections).inject([], &:+)
     end
 
     def connection
